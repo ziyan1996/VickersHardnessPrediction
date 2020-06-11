@@ -4,6 +4,7 @@ Predicting load dependent Vickers hardness based on chemical composition
 ## Citations
 
 To cite the prediction of load dependent Vickers hardness, please reference the following work:
+
 Zhang. Z, Tehrani. A.M., Oliynyk. A.O., Day. B and Brgoch. J, Finding Superhard Materials through Ensemble Learning, (add "submitted" after submission)
 
 ##  Prerequisites
