@@ -26,7 +26,7 @@ To train the model and predict the hardness of some materials you are interested
 
 ### 1 Generate descriptors
 
-Firstly, prepare your compositions in an excel file, and name it 'pred_hv_comp.xlsx' so that the script can recognize this file.
+Firstly, prepare your compositions in an excel file, and name it `pred_hv_comp.xlsx` so that the script can recognize this file.
 
 To generate descriptors for your compositions, simply run:
 
@@ -34,19 +34,19 @@ To generate descriptors for your compositions, simply run:
 python generate_des.py
 ```
 
-You will have an output file named 'pred_hv_descriptors.xlsx' containing all compositional descriptors.
+You will have an output file named `pred_hv_descriptors.xlsx` containing all compositional descriptors.
 
 *IMPORTANT STEP:* now please manualy add a new column with load values (unit: N) at the end of the descriptor file you just generated. It is up to you at which load you want to predict the hardness.
 
 ### 2 Train the model and make prediction of your compounds
 
-We have provided the training dataset in this repo ('hv_des.xlsx') for your interest, and the training process automatically done when you run the prediciton script as this:
+We have provided the training dataset in the file `hv_comp_load.xlsx` where you will find chemical compositions, hardness value and corresponding load value. We also provided the descriptors of our training set (`hv_des.xlsx`). The training process of our model will be automatically done when you run the prediciton script as this:
 
 ```bash
 python hv_prediction.py
 ```
 
-Results will be stored in a file named 'predicted_hv.xlsx'. Basically the script will first train the model using the dataset we constructed, then read the 'pred_hv_descriptors.xlsx' file you just generated and give you the predicted hardness at any load value you would be interested in.
+Results will be stored in a file named `predicted_hv.xlsx`. Basically the script will first train the model using the dataset we constructed, then read the `pred_hv_descriptors.xlsx` file you just generated and give you the predicted hardness at any load value you would be interested in.
 
 ## Authors
 
