@@ -24,7 +24,7 @@ To use all scripts smoothly, it is recommended to clone the entire repo and work
 
 To train the model and predict the hardness of some materials you are interested in, simply following these steps:
 
-###1 Generate descriptors
+### 1 Generate descriptors
 
 Firstly, prepare your compositions in an excel file, and name it 'pred_hv_comp.xlsx' so that the script can recognize this file.
 
@@ -38,7 +38,7 @@ You will have an output file named 'pred_hv_descriptors.xlsx' containing all com
 
 *IMPORTANT STEP:* now please manualy add a new column with load values (unit: N) at the end of the descriptor file you just generated. It is up to you at which load you want to predict the hardness.
 
-###2 Train the model and make prediction of your compounds
+### 2 Train the model and make prediction of your compounds
 
 We have provided the training dataset in this repo ('hv_des.xlsx') for your interest, and the training process automatically done when you run the prediciton script as this:
 
