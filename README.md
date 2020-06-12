@@ -20,13 +20,13 @@ To use the script provided here requires:
 
 ## Usage
 
-To use all scripts smoothly, it is recommended to clone the entire repo and work within one folder.
+*IMPORTANT* To use all scripts smoothly, please clone the entire repo with all files in one folder and work within that folder.
 
 To train the model and predict the hardness of some materials you are interested in, simply following these steps:
 
 ### 1 Generate descriptors
 
-Firstly, prepare your compositions in an excel file, and name it `pred_hv_comp.xlsx` so that the script can recognize this file.
+Firstly, prepare your compositions in an excel file, and name it `pred_hv_comp.xlsx` so that the script can recognize this file. The first column of the `pred_hv_comp.xlsx` file should be named as `Composition`.
 
 To generate descriptors for your compositions, simply run:
 
