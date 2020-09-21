@@ -37,7 +37,7 @@ xgb_model = xgb.XGBRegressor(max_depth=4, learning_rate=0.05, n_estimators=300, 
                              booster='gbtree', tree_method='auto', n_jobs=1, gamma=0.0001, min_child_weight=8,max_delta_step=0,
                              subsample=0.6, colsample_bytree=0.7, colsample_bynode=1, reg_alpha=0,
                              reg_lambda=4, scale_pos_weight=1, base_score=0.6, missing=None,
-                             num_parallel_tree=1, importance_type='gain', eval_metric='rmse',nthread=4).fit(X_train,Y_train)
+                             num_parallel_tree=1, importance_type='gain', eval_metric='rmse',nthread=4).fit(X_train,y_train)
 
 # Prediction
 prediction = pd.read_excel('pred_hv_descriptors.xlsx')
