@@ -44,6 +44,7 @@ xgb_model = xgb.XGBRegressor(max_depth=4, learning_rate=0.05, n_estimators=300, 
 prediction = pd.read_excel('pred_hv_descriptors.xlsx')
 a = prediction.values
 b = a[:,1:142]
+b = scalar.transform(b)
 result=xgb_model.predict(b)
 composition=pd.read_excel('pred_hv_descriptors.xlsx',sheet_name='Sheet1', usecols="A")
 composition=pd.DataFrame(composition)
