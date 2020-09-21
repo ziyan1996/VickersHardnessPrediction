@@ -6,7 +6,7 @@
 
 # Call functions
 import xgboost as xgb
-import numpy
+import numpy as np
 import pandas as pd
 from pandas import read_excel
 from sklearn.utils import resample
