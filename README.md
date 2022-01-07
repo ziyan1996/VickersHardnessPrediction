@@ -24,11 +24,11 @@ conda create -n vickers-hardness python==3.8
 conda activate vickers-hardness
 ```
 The dependencies can then be installed via:
-conda install -c conda-forge pymatgen xgboost scikit-learn pandas numpy xlrd
+conda install -c conda-forge pymatgen xgboost scikit-learn pandas numpy xlrd openpyxl
 ```
 or via:
 ```python
-pip install pymatgen xgboost scikit-learn pandas numpy xlrd
+pip install pymatgen xgboost scikit-learn pandas numpy xlrd openpyxl
 ```
 
 ## Usage
