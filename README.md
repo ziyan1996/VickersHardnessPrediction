@@ -18,6 +18,19 @@ To use the script provided here requires:
 - [NumPy](https://docs.scipy.org/doc/numpy/index.html)
 - [xlrd](https://xlrd.readthedocs.io/en/latest/index.html)
 
+We recommend that you install this in a separate conda environment which can be created and activated as follows:
+```python
+conda create -n vickers-hardness python==3.8
+conda activate vickers-hardness
+```
+The dependencies can then be installed via:
+conda install -c conda-forge pymatgen xgboost scikit-learn pandas numpy xlrd
+```
+or via:
+```python
+pip install pymatgen xgboost scikit-learn pandas numpy xlrd
+```
+
 ## Usage
 
 *IMPORTANT* To use all scripts smoothly, please clone the entire repo with all files in one folder and work within that folder.
