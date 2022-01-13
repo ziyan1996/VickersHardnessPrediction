@@ -8,7 +8,7 @@
 # import general python package/ read in compounds list
 import pandas as pd
 import numpy as np
-import pymatgen as mg
+from pymatgen.core.composition import Composition
 import matplotlib.pyplot as plt
 from statistics import mean
 
@@ -30,10 +30,10 @@ class Vectorize_Formula:
 
     def get_features(self, formula):
         try:
-            fractional_composition = mg.Composition(
+            fractional_composition = Composition(
                 formula
             ).fractional_composition.as_dict()
-            element_composition = mg.Composition(formula).element_composition.as_dict()
+            element_composition = Composition(formula).element_composition.as_dict()
             avg_feature = np.zeros(len(self.element_df.iloc[0]))
             std_feature = np.zeros(len(self.element_df.iloc[0]))
             for key in fractional_composition:
