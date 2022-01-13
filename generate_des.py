@@ -94,7 +94,7 @@ gf = Vectorize_Formula()
 features = []
 
 # add values to list using for loop
-for formula in df["Composition"]:
+for formula in df["composition"]:
     features.append(gf.get_features(formula))
 
 # feature vectors and targets as X and y
@@ -102,7 +102,7 @@ X = pd.DataFrame(features, columns=gf.column_names)
 pd.set_option("display.max_columns", None)
 # allows for the export of data to excel file
 header = gf.column_names
-header.insert(0, "Composition")
+header.insert(0, "composition")
 
 composition = pd.read_excel("pred_hv_comp.xlsx", sheet_name="Sheet1", usecols="A")
 composition = pd.DataFrame(composition)
