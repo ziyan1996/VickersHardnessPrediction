@@ -104,7 +104,7 @@ pd.set_option("display.max_columns", None)
 header = gf.column_names
 header.insert(0, "composition")
 
-composition = pd.read_excel("pred_hv_comp.xlsx", sheet_name="Sheet1", usecols="A")
+composition = pd.read_excel("hv_comp_load.xlsx", sheet_name="Sheet1", usecols="A")
 composition = pd.DataFrame(composition)
 
 predicted = np.column_stack((composition, X))
