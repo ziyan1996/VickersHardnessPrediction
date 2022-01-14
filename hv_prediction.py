@@ -1,17 +1,14 @@
 """Predict hardness values using XGBoost."""
-
-# %% Call functions
 import xgboost as xgb
 import numpy as np
 import pandas as pd
 
-import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 
 from plotting import matplotlibify
 
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
@@ -167,8 +164,6 @@ fig.write_image(figpath + ".png")
 print("MAE: ", mean_absolute_error(y_test, y_pred))
 print("R2: ", r2_score(y_test, y_pred))
 print("A file named predicted_hv.csv has been generated.\nPlease check your folder.")
-
-1 + 1
 
 # %% Code Graveyard
 # from sklearn.utils import resample
