@@ -3,8 +3,6 @@
 import pandas as pd
 import numpy as np
 from pymatgen.core.composition import Composition
-import matplotlib.pyplot as plt
-from statistics import mean
 
 df = pd.read_csv("hv_comp_load.csv")
 
