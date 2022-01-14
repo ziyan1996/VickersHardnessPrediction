@@ -3,10 +3,8 @@ import xgboost as xgb
 import numpy as np
 import pandas as pd
 
-import plotly.express as px
-import plotly.graph_objects as go
-
-from plotting import matplotlibify
+import matplotlib.pyplot as plt
+from plotting import parity_with_err
 
 from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn import preprocessing
@@ -87,6 +85,23 @@ parameters = dict(
 xgb_mdl = xgb.XGBRegressor(objective="reg:squarederror", **parameters)
 xgb_mdl.fit(X_train_scl, y_train)
 
+BoostBoruta(
+    estimator,                              # LGBModel or XGBModel
+    perc=100,                               # threshold used to compare shadow and real features
+    alpha=0.05,                             # p-value levels for feature rejection
+    max_iter=100,                           # maximum Boruta iterations to perform
+    early_stopping_boruta_rounds=None,      # maximum iterations without confirming a feature
+    param_grid=None,                        # parameters to be optimized
+    greater_is_better=False,                # minimize or maximize the monitored score
+    importance_type='feature_importances',  # which importance measure to use: default or shap
+    train_importance=True,                  # where to compute the shap feature importance
+    n_iter=None,                            # number of sampled parameter configurations
+    sampling_seed=None,                     # the seed used for parameter sampling
+    verbose=1,                              # verbosity mode
+    n_jobs=None                             # number of jobs to run in parallel
+)
+
+# %% uncertainty quantification
 # https://towardsdatascience.com/confidence-intervals-for-xgboost-cac2955a8fde
 alpha = 0.95
 xgb_upper = xgb.XGBRegressor(objective=log_cosh_quantile(alpha), **parameters)
@@ -106,7 +121,7 @@ y_test_vals = y_test.values.ravel()
 y_std = (y_upper - y_lower) / 3.92  # hard-coded for 95% CI, sample_size is 1 (?)
 if recalibrate:
     std_recalibrator = uct.recalibration.get_std_recalibrator(
-        y_pred, y_std, y_test_vals, criterion="rms_cal"
+        y_pred, y_std, y_test_vals, criterion="ma_cal"
     )
     y_std_calib = std_recalibrator(y_std)
 else:
@@ -116,6 +131,7 @@ result_df = pd.DataFrame(
     {
         "actual_hardness": y_test_vals,
         "predicted_hardness": y_pred,
+        "y_std": y_std,
         "y_std_calib": y_std_calib,
         "load": X_test["load"],
     }
@@ -123,43 +139,15 @@ result_df = pd.DataFrame(
 result_df = composition_test.join(result_df)
 result_df.to_csv("predicted_hv.csv", index=False)
 
-fig = px.scatter(
-    result_df,
-    x="actual_hardness",
-    y="predicted_hardness",
-    error_y="y_std_calib",
-    size="load",
-    hover_data=["composition"],
-)
+parity_with_err(result_df, error_y="y_std", fname="parity_err")
+parity_with_err(result_df)
 
-fig.update_traces(marker=dict(color="red"))
-
-# parity line
-mx = np.nanmax([result_df["predicted_hardness"], result_df["actual_hardness"]])
-mx2 = mx  # max of both
-# mx, mx2 = np.nanmax(proxy), np.nanmax(target) # max of each
-fig.add_trace(go.Line(x=[0, mx], y=[0, mx2], name="parity", line=dict(color="black")))
-fig.show()
-
-fig.update_layout()
-
-figpath = "parity_err"
-fig.write_html(figpath + ".html")
-
-fig, scale = matplotlibify(fig, size=48, dpi=300)
-
-fig.update_layout(
-    legend=dict(
-        font=dict(size=32),
-        yanchor="top",
-        y=0.99,
-        xanchor="left",
-        x=0.01,
-        bgcolor="rgba(0,0,0,0)",
-    )
-)
-
-fig.write_image(figpath + ".png")
+_, (ax, ax2) = plt.subplots(2, 1, figsize=(5, 11))
+uct.viz.plot_calibration(y_pred, y_std, y_test_vals, ax=ax)
+uct.viz.plot_calibration(y_pred, y_std_calib, y_test_vals, ax=ax2)
+ax.set_title("")
+ax2.set_title("")
+plt.show()
 
 print("MAE: ", mean_absolute_error(y_test, y_pred))
 print("R2: ", r2_score(y_test, y_pred))
