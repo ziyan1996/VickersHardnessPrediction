@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-
-
 @author: Ziyan Zhang, University of Houston
 """
 
@@ -12,7 +10,7 @@ from pymatgen.core.composition import Composition
 import matplotlib.pyplot as plt
 from statistics import mean
 
-df = pd.read_excel("hv_comp_load.xlsx")
+df = pd.read_csv("hv_comp_load.csv")
 
 df.head()
 df.dtypes
@@ -20,7 +18,7 @@ df.dtypes
 
 class Vectorize_Formula:
     def __init__(self):
-        elem_dict = pd.read_excel("elementsnew.xlsx")  # CHECK NAME OF FILE
+        elem_dict = pd.read_csv("elementsnew.csv")  # CHECK NAME OF FILE
         self.element_df = pd.DataFrame(elem_dict)
         self.element_df.set_index("Symbol", inplace=True)
         self.column_names = []
@@ -99,17 +97,7 @@ for formula in df["composition"]:
 
 # feature vectors and targets as X and y
 X = pd.DataFrame(features, columns=gf.column_names)
-pd.set_option("display.max_columns", None)
-# allows for the export of data to excel file
-header = gf.column_names
-header.insert(0, "composition")
-
-composition = pd.read_excel("hv_comp_load.xlsx", sheet_name="Sheet1", usecols="A")
-composition = pd.DataFrame(composition)
-
-predicted = np.column_stack((composition, X))
-predicted = pd.DataFrame(predicted)
-predicted.to_excel("pred_hv_descriptors.xlsx", index=False, header=header)
-print(
-    "A file named pred_hv_descriptors.xlsx has been generated.\nPlease check your folder."
-)
+composition_load = pd.read_csv("hv_comp_load.csv")[["composition", "load"]]
+predicted = composition_load.join(X)
+predicted.to_csv("hv_des.csv", index=False)
+print("A file named hv_des.csv has been generated.\nPlease check your folder.")
