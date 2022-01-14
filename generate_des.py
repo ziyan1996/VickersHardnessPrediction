@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-@author: Ziyan Zhang, University of Houston
-"""
-
-# import general python package/ read in compounds list
+"""Generate descriptors for XGBoost."""
 import pandas as pd
 import numpy as np
 from pymatgen.core.composition import Composition
