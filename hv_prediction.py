@@ -2,6 +2,7 @@
 import xgboost as xgb
 import numpy as np
 import pandas as pd
+from shaphypetune import BoostBoruta
 
 import matplotlib.pyplot as plt
 from plotting import parity_with_err
@@ -83,37 +84,24 @@ parameters = dict(
     nthread=4,
 )
 xgb_mdl = xgb.XGBRegressor(objective="reg:squarederror", **parameters)
-xgb_mdl.fit(X_train_scl, y_train)
-
-BoostBoruta(
-    estimator,                              # LGBModel or XGBModel
-    perc=100,                               # threshold used to compare shadow and real features
-    alpha=0.05,                             # p-value levels for feature rejection
-    max_iter=100,                           # maximum Boruta iterations to perform
-    early_stopping_boruta_rounds=None,      # maximum iterations without confirming a feature
-    param_grid=None,                        # parameters to be optimized
-    greater_is_better=False,                # minimize or maximize the monitored score
-    importance_type='feature_importances',  # which importance measure to use: default or shap
-    train_importance=True,                  # where to compute the shap feature importance
-    n_iter=None,                            # number of sampled parameter configurations
-    sampling_seed=None,                     # the seed used for parameter sampling
-    verbose=1,                              # verbosity mode
-    n_jobs=None                             # number of jobs to run in parallel
-)
+xgb_boruta = BoostBoruta(xgb_mdl)
+xgb_boruta.fit(X_train_scl, y_train)
 
 # %% uncertainty quantification
 # https://towardsdatascience.com/confidence-intervals-for-xgboost-cac2955a8fde
 alpha = 0.95
 xgb_upper = xgb.XGBRegressor(objective=log_cosh_quantile(alpha), **parameters)
-xgb_upper.fit(X_train_scl, y_train)
+xgb_upp_boruta = BoostBoruta(xgb_upper)
+xgb_upp_boruta.fit(X_train_scl, y_train)
 xgb_lower = xgb.XGBRegressor(objective=log_cosh_quantile(1 - alpha), **parameters)
-xgb_lower.fit(X_train_scl, y_train)
+xgb_low_boruta = BoostBoruta(xgb_lower)
+xgb_low_boruta.fit(X_train_scl, y_train)
 
 
 # %% Prediction
-y_pred = xgb_mdl.predict(X_test_scl)
-y_upper = xgb_upper.predict(X_test_scl)
-y_lower = xgb_lower.predict(X_test_scl)
+y_pred = xgb_boruta.predict(X_test_scl)
+y_upper = xgb_upp_boruta.predict(X_test_scl)
+y_lower = xgb_low_boruta.predict(X_test_scl)
 
 y_test_vals = y_test.values.ravel()
 
