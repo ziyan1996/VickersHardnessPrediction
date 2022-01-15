@@ -23,7 +23,7 @@ Y = array[:,0]
 
 # Train-test split
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.9, test_size=0.1,random_state=0, shuffle=True)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.9, test_size=0.1,random_state=100, shuffle=True)
 
 #scale the data
 
@@ -34,7 +34,7 @@ X_test = scaler.transform(X_test)
 
 
 # XGB model construction
-xgb_model = xgb.XGBRegressor(max_depth=4, learning_rate=0.05, n_estimators=300, verbosity=1, objective='reg:squarederror',
+xgb_model = xgb.XGBRegressor(max_depth=4, learning_rate=0.05, n_estimators=1000, verbosity=1, objective='reg:squarederror',
                              booster='gbtree', tree_method='auto', n_jobs=1, gamma=0.0001, min_child_weight=8,max_delta_step=0,
                              subsample=0.6, colsample_bytree=0.7, colsample_bynode=1, reg_alpha=0,
                              reg_lambda=4, scale_pos_weight=1, base_score=0.6, missing=None,
