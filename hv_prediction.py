@@ -1,8 +1,9 @@
 """Predict hardness values using XGBoost."""
+from os.path import join
 import xgboost as xgb
 import numpy as np
 import pandas as pd
-from shaphypetune import BoostBoruta
+from shaphypetune import BoostBoruta, BoostRFE
 
 import matplotlib.pyplot as plt
 from plotting import parity_with_err
@@ -83,25 +84,26 @@ parameters = dict(
     eval_metric="rmse",
     nthread=4,
 )
+
 xgb_mdl = xgb.XGBRegressor(objective="reg:squarederror", **parameters)
-xgb_boruta = BoostBoruta(xgb_mdl)
-xgb_boruta.fit(X_train_scl, y_train)
+xgb_hyp = BoostBoruta(xgb_mdl, importance_type="shap_importances")
+xgb_hyp.fit(X_train_scl, y_train)
 
 # %% uncertainty quantification
 # https://towardsdatascience.com/confidence-intervals-for-xgboost-cac2955a8fde
 alpha = 0.95
 xgb_upper = xgb.XGBRegressor(objective=log_cosh_quantile(alpha), **parameters)
-xgb_upp_boruta = BoostBoruta(xgb_upper)
-xgb_upp_boruta.fit(X_train_scl, y_train)
+xgb_upp_hyp = BoostBoruta(xgb_upper, importance_type="shap_importances")
+xgb_upp_hyp.fit(X_train_scl, y_train)
 xgb_lower = xgb.XGBRegressor(objective=log_cosh_quantile(1 - alpha), **parameters)
-xgb_low_boruta = BoostBoruta(xgb_lower)
-xgb_low_boruta.fit(X_train_scl, y_train)
+xgb_low_hyp = BoostBoruta(xgb_lower, importance_type="shap_importances")
+xgb_low_hyp.fit(X_train_scl, y_train)
 
 
 # %% Prediction
-y_pred = xgb_boruta.predict(X_test_scl)
-y_upper = xgb_upp_boruta.predict(X_test_scl)
-y_lower = xgb_low_boruta.predict(X_test_scl)
+y_pred = xgb_hyp.predict(X_test_scl)
+y_upper = xgb_upp_hyp.predict(X_test_scl)
+y_lower = xgb_low_hyp.predict(X_test_scl)
 
 y_test_vals = y_test.values.ravel()
 
@@ -119,6 +121,8 @@ result_df = pd.DataFrame(
     {
         "actual_hardness": y_test_vals,
         "predicted_hardness": y_pred,
+        "y_lower": y_lower,
+        "y_upper": y_upper,
         "y_std": y_std,
         "y_std_calib": y_std_calib,
         "load": X_test["load"],
@@ -127,15 +131,21 @@ result_df = pd.DataFrame(
 result_df = composition_test.join(result_df)
 result_df.to_csv("predicted_hv.csv", index=False)
 
+parity_with_err(result_df, error_y="y_upper", error_y_minus="y_lower")
 parity_with_err(result_df, error_y="y_std", fname="parity_err")
 parity_with_err(result_df)
 
-_, (ax, ax2) = plt.subplots(2, 1, figsize=(5, 11))
+_, ax = plt.subplots(1, 1, figsize=(5, 5))
 uct.viz.plot_calibration(y_pred, y_std, y_test_vals, ax=ax)
-uct.viz.plot_calibration(y_pred, y_std_calib, y_test_vals, ax=ax2)
 ax.set_title("")
+plt.show()
+plt.savefig(join("figures", "pre-cal.png"))
+
+_, ax2 = plt.subplots(1, 1, figsize=(5, 5))
+uct.viz.plot_calibration(y_pred, y_std_calib, y_test_vals, ax=ax2)
 ax2.set_title("")
 plt.show()
+plt.savefig(join("figures", "post-cal.png"))
 
 print("MAE: ", mean_absolute_error(y_test, y_pred))
 print("R2: ", r2_score(y_test, y_pred))
