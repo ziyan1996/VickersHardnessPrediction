@@ -14,6 +14,8 @@ from sklearn.model_selection import train_test_split
 
 import uncertainty_toolbox as uct
 
+from vickers_hardness.utils.uncertainty import log_cosh_quantile
+
 recalibrate = True
 
 # %% load dataset
@@ -38,26 +40,6 @@ X_test.drop(columns=["composition"], inplace=True)
 scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scl = scaler.transform(X_train)
 X_test_scl = scaler.transform(X_test)
-
-
-def log_cosh_quantile(alpha):
-    """Log cosh quantile is a regularized quantile loss function.
-
-    Source: # https://towardsdatascience.com/confidence-intervals-for-xgboost-cac2955a8fde
-    Parameters
-    ----------
-    alpha : float
-        confidence level (e.g. 95% confidence == 0.95). Ranges between 0.0 and 1.0.
-    """
-
-    def _log_cosh_quantile(y_true, y_pred):
-        err = y_pred - y_true
-        err = np.where(err < 0, alpha * err, (1 - alpha) * err)
-        grad = np.tanh(err)
-        hess = 1 / np.cosh(err) ** 2
-        return grad, hess
-
-    return _log_cosh_quantile
 
 
 # %% XGB model construction
@@ -152,17 +134,3 @@ print("R2: ", r2_score(y_test, y_pred))
 print("A file named predicted_hv.csv has been generated.\nPlease check your folder.")
 
 # %% Code Graveyard
-# from sklearn.utils import resample
-# from sklearn.svm import SVR
-
-# from ml_matrics.parity import scatter_with_err_bar
-# scatter_with_err_bar(y_test.values.ravel(), y_pred, yerr=np.vstack([y_lower,
-# y_upper]))
-# scatter_with_err_bar(y_test_vals, y_pred, yerr=y_std_calib)
-# plt.show()
-
-# f"lower_confidence_{int(alpha*100)}": y_lower,
-# f"upper_confidence_{int(alpha*100)}": y_upper,
-
-# exp_props, obs_props = uct.get_proportion_lists_vectorized(y_pred, y_std, y_test)
-# recal_model = uct.iso_recal(exp_props, obs_props)
