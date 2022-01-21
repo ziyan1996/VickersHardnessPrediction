@@ -44,9 +44,11 @@ result_dfs = [estimator.result_df for estimator in estimators]
 merge_df = pd.concat(result_dfs)
 merge_df["actual_hardness"] = y
 
-parity_with_err(merge_df, error_y="y_upper", error_y_minus="y_lower")
-parity_with_err(merge_df, error_y="y_std", fname="parity_err")
-parity_with_err(merge_df)
+parity_with_err(
+    merge_df, error_y="y_upper", error_y_minus="y_lower", fname="parity_ci_cv"
+)
+parity_with_err(merge_df, error_y="y_std", fname="parity_stderr_cv")
+parity_with_err(merge_df, fname="parity_stderr_calib_cv")
 
 y_true, y_pred = [merge_df["actual_hardness"], merge_df["predicted_hardness"]]
 mae = mean_absolute_error(y_true, y_pred)
